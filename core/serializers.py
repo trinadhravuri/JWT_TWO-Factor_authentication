@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from .models import User
-
+from rest_framework import exceptions
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -19,3 +19,8 @@ class UserSerializer(ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+    
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise exceptions.ValidationError('Email already exists')
+        return value
